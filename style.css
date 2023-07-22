@@ -1,0 +1,33 @@
+body{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: #000000;
+    background-color: #ffffff29;
+    text-align: center;
+}
+
+table{
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+    font-weight: normal;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+    font-weight: normal;
+}
+
+#interface{
+    width: 100%;
+    height: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+

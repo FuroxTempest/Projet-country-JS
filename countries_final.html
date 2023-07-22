@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Countries Final</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="interface">
+        <select  id="cont_select" ><!-- liste des continent pour les filtres-->
+            <option id="none" value="none">Choisissez un continent</option>
+            <option id="none" value="none">Rien</option>
+        </select>
+        <select  id="lang_select" ><!-- liste des langues pour les filtres-->
+            <option id="none" value="none">Choisissez une langue</option>
+            <option id="none" value="none">Rien</option>
+        </select>
+        <input type="text" placeholder="Entrez une valeur ici" id="pays_select"><!-- zone de texte pour les filtres-->
+        <button type="button" onclick="filtrage()">Filtrer</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th><a href="countries_v5.html?tri=nom" id="nom">Nom en Français</a></th>
+                <th><a href="countries_v5.html?tri=pop" id="pop">Population</a></th>
+                <th><a href="countries_v5.html?tri=surf" id="surf">Surface</a></th>
+                <th><a href="countries_v5.html?tri=dens" id="dens">Densité de population</a></th>
+                <th><a href="countries_v5.html?tri=cont" id="cont">Continent d'appartenance</a></th>
+                <th>Drapeau</th>
+
+            </tr>
+        </thead>
+        <tbody id="corps">
+        </tbody>
+    </table>
+</body>
+<div id="interface">
+    <button onclick="precedent()">Precedent</button>
+    <button onclick="suivant()">Suivant</button>
+</div>
+
+<script>
+    // requête ajax pour récupérer les données depuis l'api
+    var request = new XMLHttpRequest();
+    request.open('GET', 'https://restcountries.com/v2/all', false); // 'false' pour que la page attende la réponse
+    request.send();
+    const countries = JSON.parse(request.responseText);
+</script>
+<script src="test.js"></script>
+<script src="import_partie1.js"></script>
+<script>
+
+    // on récupère les paramètres de l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const tri = urlParams.get('tri');
+
+    var affichage=[];
+    var tab_code=[]
+    var tag_item=0
+    var page=0;
+    var tab_charge=0;
+    
+    let max=maximum();
+
+    function maximum(){
+        var max=0;
+        for(var pays in Country.all_countries){
+            max++;
+        }
+        return max;
+    }
+
+    function fill_tab_code(){
+        for (var code_p in Country.all_countries){
+            tab_code.push(code_p);
+        }
+    }
+
+    function suivant(){
+        if(tag_item==(max-25)){
+
+        }else{
+            if(affichage.length!=0){
+                for (var l=0;l<affichage.length;l++){
+                    code=affichage[l];
+                    var alpha3code_p=Country.all_countries[code].alpha3Code;
+
+                    console.log(alpha3code_p);
+                    var element=document.getElementById(alpha3code_p);
+                    element.remove();
+                }
+            }
+            fill_25_suiv();
+            fill_tab()
+            console.log(tag_item);
+        }
+    }
+
+    function fill_25_suiv(){
+        affichage=[];
+        for(var i=tag_item;i<=tag_item+25;i++){
+            code_pays=tab_code[i];
+            affichage.push(code_pays);
+            console.log(code_pays+" ajoute");
+        }
+
+        tag_item=tag_item+25;
+    }
+
+    function precedent(){
+        if(tag_item==0){
+
+        }else{
+            if(affichage.length!=0){
+                for (var l=0;l<affichage.length;l++){
+                    code=affichage[l];
+                    var alpha3code_p=Country.all_countries[code].alpha3Code;
+
+                    console.log(alpha3code_p);
+                    var element=document.getElementById(alpha3code_p);
+                    element.remove();
+                }
+            }
+            fill_25_prec();
+            fill_tab()
+            console.log(tag_item);
+        }
+    }
+
+    function fill_25_prec(){
+        affichage=[];
+        for(var i=tag_item;i>=tag_item-25;i--){
+            code_pays=tab_code[i];
+            affichage.push(code_pays);
+            console.log(code_pays+" ajoute");
+        }
+
+        tag_item=tag_item-25;
+    }
+
+    function fill_tab(){
+        
+        for(var j=0;j<affichage.length;j++){
+            //définition des différentes champs
+            code=affichage[j];
+            var alpha3code_p=Country.all_countries[code].alpha3Code;
+            var nom_p=Country.all_countries[code].name;
+            var pop_p=Country.all_countries[code].population;
+            var surf_p=Country.all_countries[code].area;
+            var dens_p=parseInt(Country.all_countries[code].getPopDensity());
+            var cont_p=Country.all_countries[code].continent;
+            var drap_p=Country.all_countries[code].flag;
+
+            // on définit le corps et la ligne <tr> à ajouter a chaque iteration 
+            var corp_tab=document.getElementById("corps");
+
+            var ligne=document.createElement("tr");
+    
+            var atr_fct=document.createAttribute("onclick")
+            var atr_id=document.createAttribute("id");
+            atr_id.value=alpha3code_p;
+            atr_fct.value="affiche("+alpha3code_p+")";
+
+            ligne.setAttributeNode(atr_id);
+            ligne.setAttributeNode(atr_fct);
+            corp_tab.appendChild(ligne);
+
+
+            //ligne nom
+            var ligne_nom=document.createElement("td");
+            var atr_nom=document.createAttribute("id");
+            atr_nom.value=nom_p;
+            ligne_nom.setAttributeNode(atr_nom);
+            ligne.appendChild(ligne_nom);
+
+            document.getElementById(nom_p).innerHTML = nom_p;
+
+            //ligne pop
+            var ligne_pop=document.createElement("td");
+            var atr_pop=document.createAttribute("id");
+            atr_pop.value=pop_p;
+            ligne_pop.setAttributeNode(atr_pop);
+            ligne.appendChild(ligne_pop);
+
+            document.getElementById(pop_p).innerHTML = pop_p;
+
+            //ligne surface
+            var ligne_surf=document.createElement("td");
+            var atr_surf=document.createAttribute("id");
+            atr_surf.value=surf_p;
+            ligne_surf.setAttributeNode(atr_surf)
+            ligne.appendChild(ligne_surf);
+            
+            document.getElementById(surf_p).innerHTML = surf_p;
+            //ligne densite
+            var ligne_dens=document.createElement("td");
+            var atr_dens=document.createAttribute("id");
+            atr_dens.value=dens_p;
+            ligne_dens.setAttributeNode(atr_dens)
+            ligne.appendChild(ligne_dens);
+            
+            document.getElementById(dens_p).innerHTML = dens_p;
+            //ligne continent
+            var ligne_cont=document.createElement("td");
+            var atr_cont=document.createAttribute("id");
+            atr_cont.value=cont_p+alpha3code_p;
+            ligne_cont.setAttributeNode(atr_cont)
+            ligne.appendChild(ligne_cont);
+            
+            document.getElementById(cont_p+alpha3code_p).innerHTML = cont_p;
+
+            //ligne drapeau
+            var ligne_drap=document.createElement("td");
+            var atr_drap=document.createAttribute("id");
+
+            atr_drap.value=drap_p;
+            
+            ligne_drap.setAttributeNode(atr_drap);
+            ligne.appendChild(ligne_drap);
+
+
+            var img_drap=document.createElement("img");
+            var lien_drap=document.createAttribute("src");
+            var height_drap=document.createAttribute("height");
+            
+
+            lien_drap.value=(drap_p);
+            height_drap.value=(60);
+
+            img_drap.setAttributeNode(lien_drap);
+            img_drap.setAttributeNode(height_drap);
+            ligne_drap.appendChild(img_drap);
+
+            //ligne info caché
+            var ligne_info=document.createElement("td");
+            var atr_info=document.createAttribute("id");
+
+            atr_info.value="inf"+alpha3code_p;
+            ligne_info.setAttributeNode(atr_info);
+            ligne.appendChild(ligne_info);
+
+            document.getElementById("inf"+alpha3code_p).innerHTML ="Voici les infos de "+nom_p+" un pays dont le code vaut "+alpha3code_p+" situé sur le continent "+cont_p;
+            tab_charge=1;
+
+            document.getElementById("inf"+alpha3code_p).style.display="none";
+        
+        }
+    }
+
+    function affiche(code){
+        console.log(code.id);
+
+        var ligne_cliquable=document.getElementById("inf"+code.id)
+        if(getComputedStyle(ligne_cliquable).display != "none"){
+            ligne_cliquable.style.display = "none";
+        } else {
+            ligne_cliquable.style.display = "block";
+        }
+    }
+
+    function zoom(code){
+        console.log("voila"+code.id);
+    }
+
+    
+/*******************************************************
+************************ filtres ***********************
+********************************************************/
+
+    //on remplis la liste de filtrage des continent 
+    function fill_liste_cont(){
+        var tab_cont=[];
+        for (var code in Country.all_countries){
+            var cont=Country.all_countries[code].continent;//on récupère le continent du pays
+            if(tab_cont.includes(cont)){// si continent déja dans la liste
+           
+            }else{
+
+                var corp_cont=document.getElementById("cont_select");//on récupère le corps de la liste
+
+                var continent=document.createElement("option");//on crée un ligne options
+                var atr_value=document.createAttribute("value");//on lui ajoute un paramètre value
+                var atr_id_cont=document.createAttribute("id");//on lui ajoute un paramètre id
+
+                atr_value.value=cont;//on set la value pour être le continent
+                atr_id_cont.value="cont"+cont;//on set l'id
+                continent.setAttributeNode(atr_value);//on ajoute les attributs à la ligne option
+                continent.setAttributeNode(atr_id_cont);
+
+                corp_cont.appendChild(continent);//on ajoute la ligne options au corps
+                console.log("on ajoute "+cont);
+                console.log(document.getElementById("cont"+cont));
+         
+                document.getElementById("cont"+cont).innerHTML = cont;//on ajoute le nom du continent dans l'html de l'element pour l'affihcer dans la liste
+                tab_cont.push(cont);//on ajoute le continent au tableau pour éviter les doublons
+            }
+        }
+    }
+
+    //on remplis la liste de filtrage des langues 
+    //on reprend le même principe que pour la fonction fill_liste_cont() au dessus
+    function fill_liste_lang(){
+        
+        var tab_lang=[];
+        for (var code in Country.all_countries){
+            var lang=Country.all_countries[code].languages;
+            for(var lang_ajoute in lang){
+
+                if(tab_lang.includes(Country.all_countries[code].languages[lang_ajoute].name)){
+           
+                }else{
+                    var lg_ajoute=Country.all_countries[code].languages[lang_ajoute].name;
+                    var corp_lang=document.getElementById("lang_select")
+
+                    var langue=document.createElement("option");
+                    var atr_value=document.createAttribute("value");
+                    var atr_id_lang=document.createAttribute("id");
+
+                    atr_value.value=lg_ajoute;
+                    atr_id_lang.value="lang"+lg_ajoute;
+                    langue.setAttributeNode(atr_value);
+                    langue.setAttributeNode(atr_id_lang);
+
+                    corp_lang.appendChild(langue);
+
+                    document.getElementById("lang"+lg_ajoute).innerHTML = lg_ajoute;
+                    tab_lang.push(lg_ajoute);
+                }
+
+            }
+        }   
+    }
+
+    function filtrage(){
+        fill_tab_code(); //on remplis tab_code avec tout les pays , dans cette fonction, il vas nous servir de tableau de sortie qui contiendra les pays correspondant au filtres
+
+        tab_filtre_cont=[] // on va utiliser ce tableau pour récupérer les pays correspondant au filtre du continent
+        tab_filtre_lang=[] // on va utiliser ce tableau pour récupérer les pays correspondant au filtre de la lang
+        tab_filtre_txt=[] // on va utiliser ce tableau pour récupérer les pays correspondant au nom entré
+
+        var choix_cont=document.getElementById("cont_select").value;
+        var choix_lang=document.getElementById("lang_select").value;
+        var choix_txt=document.getElementById("pays_select").value
+
+        if((choix_cont!="none")||(choix_lang!="none")){
+
+            // on commence par appliquer le filtre de continent si il est définie
+            if(choix_cont!="none"){
+                for(var code_pays_filtre_cont in Country.all_countries){//on se déplace dans les codes des pays
+                    if(Country.all_countries[code_pays_filtre_cont].continent==choix_cont){// si le continent correspond au pays dont on regarde le code
+                        tab_filtre_cont.push(code_pays_filtre_cont);//on l'ajoute au tableau temporaires qui contient les pays correspondant au continent
+                    }
+                }
+                tab_code=[];//on remet tab_code à 0 pour garder uniquement les pays qui nous intéressent
+                for(h=0;h<tab_filtre_cont.length;h++){
+                    tab_code.push(tab_filtre_cont[h]);//on ajoute les pays qui nous intéressent 
+                }
+            }
+
+            // on continue ensuite en appliquant le filtre des langues si il est définie
+            if(choix_lang!="none"){
+                for(var h=0;h<tab_code.length;h++){//on se balade dans les pays déja filtré par continent si ce dernier était set , sinon on se balade dans le tableau contenant tout les pays
+                    for(var lang_parle in Country.all_countries[tab_code[h]].languages){
+                        for(var lg_parle in lang_parle){
+                            if(Country.all_countries[tab_code[h]].languages[lg_parle].name==choix_lang){// si lang du pays correspond à la lang du filtre
+                                tab_filtre_lang.push(tab_code[h]);//on l'ajoute au tableau temporaire contenant les pays qui nous inétressent
+                                break;
+                            }
+                        }
+                    }
+                }
+                tab_code=[];//on remet tab_code à 0 pour garder uniquement les pays qui nous intéressent
+                for(h=0;h<tab_filtre_lang.length;h++){//on se balade dans le tableau des pays qui nous intéressent
+                    if(tab_code.includes(tab_filtre_lang[h])){//on regarde si le pays est déja dans le tableau 
+
+                    }else{
+                        tab_code.push(tab_filtre_lang[h]);//on remplis tab_code avec ces pays
+                    }
+                }
+            
+            }
+
+            //enfin on s'interéssent à la zone de texte
+            if(choix_txt!=""){//si différents de vide
+                for(var h=0;h<tab_code.length;h++){//on se déplace dans le tableau tab_code déja trié auparavant si les autres champs de filtre 
+                                                   //était set, sinon on se déplace dans le tableau contenant tou les pays
+                    if(Country.all_countries[tab_code[h]].name.indexOf(choix_txt)!==-1){//si le nom du pays contient le texte rentré dans le filtre
+                        tab_filtre_txt.push(tab_code[h])//on ajoute le pays au tableau temporaire
+                    }
+                }
+
+                tab_code=[];//on remet tab_code à 0 pour garder uniquement les pays qui nous intéressent
+                for(h=0;h<tab_filtre_txt.length;h++){//on se balade dans le tableau des pays qui nous intéressent
+                    tab_code.push(tab_filtre_txt[h]);//on ajoute le pays a tab_code
+                }
+            }
+       
+            if(tab_code.length!=0){
+                tag_item=0;//pour permettre de relancer l'affichage des pays en 25 par 25
+                suivant();//on appelle suivant qui va lancer l'affichage 25 par 25  en utilisant tab_code qui contient nos pays filtré
+            }else{
+                window.alert("votre recherche ne correspond à aucun pays");//si tableau tab_code vide
+            }
+            
+        }else{//si pas de filtre
+            tab_code=[];//on remet tab_code à 0
+            fill_tab_code();//on le remplis avec tous les pays
+            tag_item=0;
+            suivant();//on appelle la fonction pour lancer l'affichage 25 par 25 en utilisant tab_code qui contiendras tout les pays
+        }
+    }
+
+/************************************
+*************** Tris ***************
+*************************************/
+
+    fill_tab_code(); //on remplis tab_code vaec touts les pays
+
+    // quand dans l'url il y a un paramètre tri, on trie le tableau des pays par ce paramètre
+    if (tri == "nom") {
+        // change le style du bouton pour montrer que le tableau est trié par population
+        document.getElementById("nom").style.fontWeight = "bold";
+        document.getElementById("nom").innerHTML += " &#9650;";
+        // on trie le tableau par les noms de pays
+        tab_code.sort(function(a, b) {
+            return Country.all_countries[a].name.localeCompare(Country.all_countries[b].name);
+        });
+    } else if (tri == "pop") {
+        // change le style du bouton pour montrer que le tableau est trié par population
+        document.getElementById("pop").style.fontWeight = "bold";
+        document.getElementById("pop").innerHTML += " &#9650;";
+
+        // on trie le tableau par population
+        tab_code.sort(function(a, b) {
+            return Country.all_countries[b].population - Country.all_countries[a].population;
+        });
+        // retourne la tableau pour qu'il soit trié par ordre croissant
+        tab_code.reverse();
+    } else if (tri == "surf") {
+        // change le style du bouton pour montrer que le tableau est trié par population
+        document.getElementById("surf").style.fontWeight = "bold";
+        document.getElementById("surf").innerHTML += " &#9650;";
+
+        // on trie le tableau par surface
+        tab_code.sort(function(a, b) {
+            return Country.all_countries[b].area - Country.all_countries[a].area;
+        });
+
+        // retourne la tableau pour qu'il soit trié par ordre croissant
+        tab_code.reverse();
+    } else if (tri == "dens") {
+        // change le style du bouton pour montrer que le tableau est trié par population
+        document.getElementById("dens").style.fontWeight = "bold";
+        document.getElementById("dens").innerHTML += " &#9650;";
+
+        // on trie le tableau par densité
+        tab_code.sort(function(a, b) {
+            return Country.all_countries[b].getPopDensity() - Country.all_countries[a].getPopDensity();
+        });
+
+        // retourne la tableau pour qu'il soit trié par ordre croissant
+        tab_code.reverse();
+    } else if (tri == "cont") {
+        // change le style du bouton pour montrer que le tableau est trié par population
+        document.getElementById("cont").style.fontWeight = "bold";
+        document.getElementById("cont").innerHTML += " &#9650;";
+
+        // on trie le tableau par continent
+        tab_code.sort(function(a, b) {
+            return Country.all_countries[a].continent.localeCompare(Country.all_countries[b].continent);
+        });
+    }
+    
+    suivant(); //on appelle la fonction pour lancer l'affichage 25 par 25 en utilisant tab_code qui contiendras tout les pays
+    fill_liste_cont(); //on remplis la liste du filtre continent
+    fill_liste_lang(); //on remplis la liste du filtre langues
+</script>
+</html>

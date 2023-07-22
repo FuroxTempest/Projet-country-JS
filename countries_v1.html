@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom en Français</th>
+                <th>Population</th>
+                <th>Surface</th>
+                <th>Densité de population</th>
+                <th>Continent d'appartenance</th>
+                <th>Drapeau</th>
+            </tr>
+        </thead>
+        <tbody id="corps">
+            <tr>
+                <td>NOM</td>
+                <td>POP</td>
+                <td>SURF</td>
+                <td>DENS</td>
+                <td>CONTINENT</td>
+                <td>URL</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+
+<script src="countries.js"></script>
+<script src="test.js"></script>
+<script src="import_partie1.js"></script>
+<script>
+  
+       //fonction pour remplir le tableau avec les codes pays en utilisant le tableau affichage précedemment initialisé avec les pays 25 par 25
+       function fill_tab(){
+        
+        for(var j=0;j<affichage.length;j++){
+            //définition des différentes champs
+            code=affichage[j];
+            var alpha3code_p=Country.all_countries[code].alpha3Code;
+            var nom_p=Country.all_countries[code].name;
+            var pop_p=Country.all_countries[code].population;
+            var surf_p=Country.all_countries[code].area;
+            var dens_p=parseInt(Country.all_countries[code].getPopDensity());
+            var cont_p=Country.all_countries[code].continent;
+            var drap_p=Country.all_countries[code].flag;
+
+            // on définit le corps et la ligne <tr> à ajouter a chaque iteration 
+            var corp_tab=document.getElementById("corps");//on récupère le corps du tableau
+
+            var ligne=document.createElement("tr");//on crée une ligne
+    
+            var atr_id=document.createAttribute("id");//on ajoute un attribut id
+            atr_id.value=alpha3code_p;//on change la valeur de l'attribut id
+
+            ligne.setAttributeNode(atr_id);//on ajoute l'attribut id a la ligne
+            corp_tab.appendChild(ligne);//on ajoute la ligne au corps du tableau
+
+            //on répête ces étapes pour les lignes suivantes
+            //ligne nom
+            var ligne_nom=document.createElement("td");
+            var atr_nom=document.createAttribute("id");
+            atr_nom.value=nom_p;
+            ligne_nom.setAttributeNode(atr_nom);
+            ligne.appendChild(ligne_nom);
+
+            document.getElementById(nom_p).innerHTML = nom_p;
+
+            //ligne pop
+            var ligne_pop=document.createElement("td");
+            var atr_pop=document.createAttribute("id");
+            atr_pop.value=pop_p;
+            ligne_pop.setAttributeNode(atr_pop);
+            ligne.appendChild(ligne_pop);
+
+            document.getElementById(pop_p).innerHTML = pop_p;
+
+            //ligne surface
+            var ligne_surf=document.createElement("td");
+            var atr_surf=document.createAttribute("id");
+            atr_surf.value=surf_p;
+            ligne_surf.setAttributeNode(atr_surf)
+            ligne.appendChild(ligne_surf);
+            
+            document.getElementById(surf_p).innerHTML = surf_p;
+            //ligne densite
+            var ligne_dens=document.createElement("td");
+            var atr_dens=document.createAttribute("id");
+            atr_dens.value=dens_p;
+            ligne_dens.setAttributeNode(atr_dens)
+            ligne.appendChild(ligne_dens);
+            
+            document.getElementById(dens_p).innerHTML = dens_p;
+            //ligne continent
+            var ligne_cont=document.createElement("td");
+            var atr_cont=document.createAttribute("id");
+            atr_cont.value=cont_p+alpha3code_p;
+            ligne_cont.setAttributeNode(atr_cont)
+            ligne.appendChild(ligne_cont);
+            
+            document.getElementById(cont_p+alpha3code_p).innerHTML = cont_p;
+
+            //ligne drapeau
+            var ligne_drap=document.createElement("td");
+            var atr_drap=document.createAttribute("id");
+
+            atr_drap.value=drap_p;
+            
+            ligne_drap.setAttributeNode(atr_drap);
+            ligne.appendChild(ligne_drap);
+
+
+            var img_drap=document.createElement("img");
+            var lien_drap=document.createAttribute("src");
+            var height_drap=document.createAttribute("height");
+            
+
+            lien_drap.value=(drap_p);
+            height_drap.value=(60);
+
+            img_drap.setAttributeNode(lien_drap);
+            img_drap.setAttributeNode(height_drap);
+            ligne_drap.appendChild(img_drap);
+
+            //ligne info caché
+            var ligne_info=document.createElement("td");
+            var atr_info=document.createAttribute("id");
+
+            atr_info.value="inf"+alpha3code_p;
+            ligne_info.setAttributeNode(atr_info);
+            ligne.appendChild(ligne_info);
+
+            //on ajoute les informations du pays 
+            document.getElementById("inf"+alpha3code_p).innerHTML ="Voici les infos de "+nom_p+" un pays dont le code vaut "+alpha3code_p+" situé sur le continent "+cont_p;
+            document.getElementById("inf"+alpha3code_p).style.display="none";//on met le display de la cette case  en none
+        
+        }
+    }
+
+
+    fill_tab();
+    
+</script>
+</html>
